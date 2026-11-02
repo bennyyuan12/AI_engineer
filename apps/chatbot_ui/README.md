@@ -3,7 +3,7 @@
 Run the Streamlit frontend and FastAPI backend from the repository root:
 
 ```sh
-docker compose -f apps/docker-compose.yml up --build
+docker compose up --build -d --wait
 ```
 
 Open http://localhost:8501 for the chatbot, or http://localhost:8000/docs for the API.
@@ -12,6 +12,11 @@ The API loads its provider keys from the repository's `.env` file.
 The frontend uses `API_BASE_URL`, which defaults to `http://localhost:8000`.
 Compose sets it to `http://api:8000` so the frontend can reach the backend container.
 Only the backend needs provider API keys.
+
+The root Compose file includes `apps/docker-compose.yml`, so using either file
+starts the same stack. The frontend entrypoint is `chatbot_ui/app.py`, mounted from
+`apps/chatbot_ui/src`; the older root `src/app.py` is not served.
+See the repository README for debugging commands and `make test`.
 
 To run the frontend locally against a backend already running on port 8000:
 
