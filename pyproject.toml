@@ -22,3 +22,8 @@ members = [
     "apps/api",
     "apps/chatbot_ui",
 ]
+
+[dependency-groups]
+dev = [
+    "qdrant-client>=1.20.0",
+]
