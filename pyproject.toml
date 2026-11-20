@@ -25,5 +25,10 @@ members = [
 
 [dependency-groups]
 dev = [
+    # Ragas 0.3.1 needs the VertexAI imports removed in langchain-community 0.4.2.
+    "langchain-community==0.4.1",
+    "langgraph>=1.2.20",
+    "nest-asyncio2>=1.7.4,<2",
     "qdrant-client>=1.20.0",
+    "ragas>=0.3.1",
 ]
