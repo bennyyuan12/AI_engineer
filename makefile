@@ -1,4 +1,4 @@
-.PHONY: run-docker-compose up logs test
+.PHONY: run-docker-compose up logs test run-evals-retriever
 
 run-docker-compose: up
 
@@ -11,3 +11,7 @@ logs:
 test:
 	docker compose exec -T api python -m unittest discover -s /app/apps/api/tests
 	docker compose exec -T chatbot-ui python -m unittest discover -s /app/apps/chatbot_ui/tests
+
+
+run-evals-retriever:
+	PYTHONPATH="$(CURDIR)/apps/api/src:$${PYTHONPATH}" uv run --env-file .env python apps/api/evals/eval_retriever.py
