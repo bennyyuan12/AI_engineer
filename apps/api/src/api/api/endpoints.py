@@ -2,8 +2,8 @@ from fastapi import FastAPI, HTTPException, Request, APIRouter
 from pydantic import BaseModel, Field, field_validator
 from api.core.config import config
 import logging
-from api.api.models import RAGRequest, RAGResponse
-from api.agents.retrieval_generation import rag_pipeline
+from api.api.models import RAGRequest, RAGResponse,RAGUsedContext
+from api.agents.retrieval_generation import rag_pipeline_wrapper
 
 logging.basicConfig(
     level=logging.INFO,
@@ -21,8 +21,12 @@ def rag(
     request: Request,
     payload: RAGRequest
 ) -> RAGResponse:
-    answer = rag_pipeline(payload.query)
-    return RAGResponse(request_id=request.state.request_id, answer=answer['answer'])
+    answer = rag_pipeline_wrapper(payload.query)
+    return RAGResponse(
+        request_id=request.state.request_id, 
+        answer=answer['answer'],
+        used_context=[RAGUsedContext(**used_context) for used_context in answer['used_context']]
+    )
 
 api_router = APIRouter()
 api_router.include_router(rag_router, prefix="/rag")

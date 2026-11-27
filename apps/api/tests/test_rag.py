@@ -5,15 +5,21 @@ from unittest.mock import patch
 from fastapi.testclient import TestClient
 
 
-with patch.dict(os.environ, {
-    "OPENAI_API_KEY": "test-openai-key",
-    "ANTHROPIC_API_KEY": "test-anthropic-key",
-    "GROK_API_KEY": "test-grok-key",
-    "GOOGLE_API_KEY": "test-google-key",
-}), patch("openai.OpenAI") as openai, patch("qdrant_client.QdrantClient") as qdrant:
+with (
+    patch.dict(os.environ, {
+        "OPENAI_API_KEY": "test-openai-key",
+        "ANTHROPIC_API_KEY": "test-anthropic-key",
+        "GROK_API_KEY": "test-grok-key",
+        "GOOGLE_API_KEY": "test-google-key",
+    }),
+    patch("instructor.from_openai") as wrap_openai,
+    patch("openai.OpenAI") as openai,
+    patch("qdrant_client.QdrantClient") as qdrant,
+):
     from api.app import app
     openai.return_value.embeddings.create.assert_not_called()
-    openai.return_value.chat.completions.create.assert_not_called()
+    wrap_openai.assert_called_once_with(openai.return_value)
+    wrap_openai.return_value.chat.completions.create_with_completion.assert_not_called()
     qdrant.assert_not_called()
 
 
@@ -31,7 +37,13 @@ class RAGApiTests(unittest.TestCase):
             self.assertEqual(self.client.get(path).status_code, 200)
         pipeline.assert_not_called()
 
-    @patch("api.api.endpoints.rag_pipeline", return_value="A science fiction recommendation")
+    @patch(
+        "api.api.endpoints.rag_pipeline",
+        return_value={
+            "answer": "A science fiction recommendation",
+            "references": [{"id": "book-1", "description": "A science fiction novel"}],
+        },
+    )
     def test_rag_contract(self, pipeline):
         response = self.client.post("/rag/", json={"query": "science fiction"})
         self.assertEqual(response.status_code, 200)

@@ -14,4 +14,4 @@ test:
 
 
 run-evals-retriever:
-	PYTHONPATH="$(CURDIR)/apps/api/src:$${PYTHONPATH}" uv run --env-file .env python apps/api/evals/eval_retriever.py
+	uv run --all-packages --env-file .env python apps/api/evals/eval_retriever.py

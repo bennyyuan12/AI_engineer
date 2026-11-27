@@ -11,6 +11,7 @@ dependencies = [
     "anthropic>=1.11.0",
     "deepagents>=0.7.32",
     "fastapi>=0.142.2",
+    "instructor",
     "openai>=3.23.0",
     "pydantic>=2.13.5",
     "pydantic-settings>=2.15.0",
@@ -24,6 +25,7 @@ build-backend = "uv_build"
 
 [tool.uv.sources]
 shared = {workspace = true}
+instructor = { git = "https://github.com/567-labs/instructor.git", rev = "0acb3a19c3ec6f89c6a204340c52a30ee33fa04b" }
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/api"]
